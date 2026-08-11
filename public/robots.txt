@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://nexora-ecell.acet.ac.in/sitemap.xml
