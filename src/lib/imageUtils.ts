@@ -140,7 +140,15 @@ export async function uploadOrCompressPhoto(
           .getPublicUrl(fileName);
 
         if (data?.publicUrl) {
-          return data.publicUrl;
+          try {
+            const checkRes = await fetch(data.publicUrl, { method: 'HEAD' });
+            if (checkRes.ok) {
+              return data.publicUrl;
+            }
+            console.warn(`Supabase storage public URL returned status ${checkRes.status}. Falling back to compressed Data URL.`);
+          } catch (fetchErr) {
+            console.warn('Supabase storage public URL accessibility test failed:', fetchErr);
+          }
         }
       } else {
         console.warn(`Supabase storage bucket "${bucketName}" upload notice:`, error.message);
