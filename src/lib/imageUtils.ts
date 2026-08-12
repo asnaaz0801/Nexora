@@ -7,9 +7,24 @@ export const DEFAULT_AVATAR_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://ww
 
 export const DEFAULT_BANNER_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none"><rect width="800" height="450" fill="%230D1117"/><rect x="15" y="15" width="770" height="420" rx="16" fill="%23161F2E" stroke="%23334155" stroke-width="2"/><path d="M250 300L350 180L450 280L550 150L650 300H250Z" fill="%231E293B" stroke="%2300D2FF" stroke-width="2"/><circle cx="300" cy="140" r="35" fill="%2300D2FF" fill-opacity="0.2" stroke="%2300D2FF" stroke-width="2"/><text x="400" y="370" font-family="sans-serif" font-size="22" font-weight="bold" fill="%2394A3B8" text-anchor="middle">NEXORA E-CELL</text></svg>`;
 
+export function generateInitialsAvatar(name?: string): string {
+  const cleanName = (name || 'Member').trim();
+  const parts = cleanName.split(/\s+/).filter(Boolean);
+  let initials = 'N';
+  if (parts.length >= 2) {
+    initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  } else if (parts.length === 1 && parts[0].length > 0) {
+    initials = parts[0].substring(0, 2).toUpperCase();
+  }
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none"><rect width="400" height="400" fill="%230D1117"/><circle cx="200" cy="200" r="175" fill="%23161F2E" stroke="%2300D2FF" stroke-width="6"/><text x="200" y="245" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="150" font-weight="800" fill="%2300D2FF" text-anchor="middle">${initials}</text></svg>`;
+
+  return `data:image/svg+xml;utf8,${svg}`;
+}
+
 export function getAvatarFallback(name?: string): string {
   if (name && name.trim()) {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=0D1117&color=00D2FF&size=400`;
+    return generateInitialsAvatar(name);
   }
   return DEFAULT_AVATAR_SVG;
 }
@@ -28,7 +43,7 @@ export function handleImageError(
 }
 
 /**
- * Event handler attached to team member <img> elements to fall back to UI-Avatars or SVG avatar.
+ * Event handler attached to team member <img> elements to fall back to dynamic initials SVG avatar.
  */
 export function handleAvatarError(
   e: React.SyntheticEvent<HTMLImageElement, Event>,
@@ -37,7 +52,7 @@ export function handleAvatarError(
   const target = e.currentTarget;
   if (target.dataset.hasFailed) return; // Prevent infinite loop if fallback fails
   target.dataset.hasFailed = 'true';
-  target.src = getAvatarFallback(name);
+  target.src = generateInitialsAvatar(name);
 }
 
 /**
