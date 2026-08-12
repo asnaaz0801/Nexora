@@ -111,83 +111,59 @@ ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE event_registrations ENABLE ROW LEVEL SECURITY;
 
 -- ─── TEAM MEMBERS ─────────────────────────────────
--- Public: Can read active members only
+-- Allow read/write for all users (syncs across all browsers)
 DROP POLICY IF EXISTS "team_members_public_read" ON team_members;
-CREATE POLICY "team_members_public_read" ON team_members
-  FOR SELECT USING (is_active = true);
-
--- Admin: Full access (restricted to specific email via JWT claim)
 DROP POLICY IF EXISTS "team_members_admin_all" ON team_members;
-CREATE POLICY "team_members_admin_all" ON team_members
-  FOR ALL USING (
-    auth.jwt() ->> 'email' = 'asnaaz0801@gmail.com'
-  );
+DROP POLICY IF EXISTS "team_members_all_access" ON team_members;
+CREATE POLICY "team_members_all_access" ON team_members
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- ─── EVENTS ───────────────────────────────────────
--- Public: Can read published events only
+-- Allow read/write for all users (syncs across all browsers)
 DROP POLICY IF EXISTS "events_public_read" ON events;
-CREATE POLICY "events_public_read" ON events
-  FOR SELECT USING (is_published = true);
-
--- Admin: Full access
 DROP POLICY IF EXISTS "events_admin_all" ON events;
-CREATE POLICY "events_admin_all" ON events
-  FOR ALL USING (
-    auth.jwt() ->> 'email' = 'asnaaz0801@gmail.com'
-  );
+DROP POLICY IF EXISTS "events_all_access" ON events;
+CREATE POLICY "events_all_access" ON events
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- ─── SITE CONTENT ─────────────────────────────────
--- Public: Can read all site content (it's public content)
+-- Allow read/write for all users (syncs across all browsers)
 DROP POLICY IF EXISTS "site_content_public_read" ON site_content;
-CREATE POLICY "site_content_public_read" ON site_content
-  FOR SELECT USING (true);
-
--- Admin: Full write access
 DROP POLICY IF EXISTS "site_content_admin_write" ON site_content;
-CREATE POLICY "site_content_admin_write" ON site_content
-  FOR ALL USING (
-    auth.jwt() ->> 'email' = 'asnaaz0801@gmail.com'
-  );
+DROP POLICY IF EXISTS "site_content_all_access" ON site_content;
+CREATE POLICY "site_content_all_access" ON site_content
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- ─── CONTACT MESSAGES ─────────────────────────────
--- Public: Anyone can insert (submit a message)
 DROP POLICY IF EXISTS "contact_messages_public_insert" ON contact_messages;
-CREATE POLICY "contact_messages_public_insert" ON contact_messages
-  FOR INSERT WITH CHECK (true);
-
--- Admin: Can read all messages and update status
 DROP POLICY IF EXISTS "contact_messages_admin_all" ON contact_messages;
-CREATE POLICY "contact_messages_admin_all" ON contact_messages
-  FOR ALL USING (
-    auth.jwt() ->> 'email' = 'asnaaz0801@gmail.com'
-  );
+DROP POLICY IF EXISTS "contact_messages_all_access" ON contact_messages;
+CREATE POLICY "contact_messages_all_access" ON contact_messages
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- ─── EVENT REGISTRATIONS ──────────────────────────
--- Public: Anyone can register for events
 DROP POLICY IF EXISTS "event_registrations_public_insert" ON event_registrations;
-CREATE POLICY "event_registrations_public_insert" ON event_registrations
-  FOR INSERT WITH CHECK (true);
-
--- Admin: Can read all registrations
 DROP POLICY IF EXISTS "event_registrations_admin_read" ON event_registrations;
-CREATE POLICY "event_registrations_admin_read" ON event_registrations
-  FOR ALL USING (
-    auth.jwt() ->> 'email' = 'asnaaz0801@gmail.com'
-  );
+DROP POLICY IF EXISTS "event_registrations_all_access" ON event_registrations;
+CREATE POLICY "event_registrations_all_access" ON event_registrations
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- =====================================================
 -- STORAGE BUCKET & POLICIES
--- Create a public bucket named "team-images"
+-- Create public buckets named "team-images" and "event-images"
 -- =====================================================
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('team-images', 'team-images', true)
 ON CONFLICT (id) DO NOTHING;
 
-DROP POLICY IF EXISTS "Public team images read" ON storage.objects;
-CREATE POLICY "Public team images read" ON storage.objects FOR SELECT USING (bucket_id = 'team-images');
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('event-images', 'event-images', true)
+ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Public team images read" ON storage.objects;
 DROP POLICY IF EXISTS "Public team images insert" ON storage.objects;
-CREATE POLICY "Public team images insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'team-images');
+DROP POLICY IF EXISTS "Public images all" ON storage.objects;
+CREATE POLICY "Public images all" ON storage.objects FOR ALL USING (bucket_id IN ('team-images', 'event-images')) WITH CHECK (bucket_id IN ('team-images', 'event-images'));
 
 -- =====================================================
 -- SEED DEFAULT SITE CONTENT

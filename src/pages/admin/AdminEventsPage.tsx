@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Plus, Edit2, Trash2, Eye, EyeOff, AlertCircle, CheckCircle2, Upload, X, RefreshCw } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { Event, EventCategory, EventStatus } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/common/Modal';
 import { Button } from '../../components/common/Button';
+import { uploadOrCompressPhoto } from '../../lib/imageUtils';
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-surface border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-nexora-500 transition-colors";
 const labelClass = "block text-xs font-semibold text-slate-300 mb-1.5";
@@ -36,6 +37,35 @@ export const AdminEventsPage: React.FC = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ ...emptyForm });
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Please select a JPG, PNG, or WebP image file.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB.');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const bannerResult = await uploadOrCompressPhoto(file, 'event-images');
+      setFormData(prev => ({ ...prev, bannerImage: bannerResult }));
+    } catch (err) {
+      console.error('Failed to process event banner:', err);
+      alert('Could not process selected image file.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleOpenAdd = () => {
     setEditingEventId(null);
@@ -290,10 +320,47 @@ export const AdminEventsPage: React.FC = () => {
           </div>
 
           <div>
-            <label className={labelClass}>Banner Image URL</label>
-            <input type="url" className={inputClass} value={formData.bannerImage}
-              onChange={e => setFormData({ ...formData, bannerImage: e.target.value })}
-              placeholder="https://..." />
+            <label className={labelClass}>Banner Image (Upload or URL)</label>
+            {formData.bannerImage ? (
+              <div className="relative inline-block mb-3">
+                <img src={formData.bannerImage} alt="Banner Preview" className="w-32 h-20 rounded-xl object-cover bg-slate-900 border border-slate-700" />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, bannerImage: '' })}
+                  className="absolute -top-2 -right-2 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full transition-colors shadow-md"
+                  title="Remove image"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : null}
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                className={inputClass}
+                value={formData.bannerImage}
+                onChange={e => setFormData({ ...formData, bannerImage: e.target.value })}
+                placeholder="Paste image URL or upload file..."
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImage}
+                leftIcon={uploadingImage ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                className="whitespace-nowrap"
+              >
+                {uploadingImage ? 'Uploading...' : 'Upload File'}
+              </Button>
+            </div>
           </div>
 
           <div>

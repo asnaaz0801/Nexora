@@ -5,7 +5,7 @@ import { TeamMember } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/common/Modal';
 import { Button } from '../../components/common/Button';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { uploadOrCompressPhoto } from '../../lib/imageUtils';
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-surface border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-nexora-500 transition-colors";
 const labelClass = "block text-xs font-semibold text-slate-300 mb-1.5";
@@ -83,16 +83,6 @@ export const AdminTeamPage: React.FC = () => {
     setModalOpen(true);
   };
 
-  // Convert image file to Base64 Data URL (fail-safe fallback)
-  const readFileAsDataUrl = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -102,46 +92,19 @@ export const AdminTeamPage: React.FC = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be less than 5MB.');
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB.');
       return;
     }
 
     setUploadingImage(true);
 
     try {
-      // Step 1: Attempt Supabase Storage Upload if configured
-      if (isSupabaseConfigured && supabase) {
-        const ext = file.name.split('.').pop();
-        const fileName = `team-${Date.now()}.${ext}`;
-        const { error } = await supabase.storage
-          .from('team-images')
-          .upload(fileName, file, { upsert: true });
-
-        if (!error) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('team-images')
-            .getPublicUrl(fileName);
-
-          if (publicUrl) {
-            setFormData(prev => ({ ...prev, photo: publicUrl }));
-            setUploadingImage(false);
-            return;
-          }
-        }
-      }
-
-      // Step 2: Fail-safe Base64 Data URL Fallback (works 100% without RLS errors)
-      const dataUrl = await readFileAsDataUrl(file);
-      setFormData(prev => ({ ...prev, photo: dataUrl }));
+      const photoResult = await uploadOrCompressPhoto(file, 'team-images');
+      setFormData(prev => ({ ...prev, photo: photoResult }));
     } catch (err) {
-      // Final fallback to Data URL
-      try {
-        const dataUrl = await readFileAsDataUrl(file);
-        setFormData(prev => ({ ...prev, photo: dataUrl }));
-      } catch (dataUrlErr) {
-        console.error('Failed to read image file:', dataUrlErr);
-      }
+      console.error('Failed to process image file:', err);
+      alert('Could not process selected image. Please try another file.');
     } finally {
       setUploadingImage(false);
     }

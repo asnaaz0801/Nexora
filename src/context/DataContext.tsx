@@ -122,12 +122,64 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const mapped = mapEvents(eventsRes.data);
           setEvents(mapped);
           setStored(EVENTS_KEY, mapped);
+        } else if (eventsRes.data && eventsRes.data.length === 0) {
+          // Auto-seed initial events to Supabase so Cloud DB is ready for cross-browser sync
+          const localEvents = getStored<Event[]>(EVENTS_KEY, []);
+          if (localEvents.length > 0) {
+            const rows = localEvents.map(e => ({
+              id: e.id,
+              title: e.title,
+              slug: e.slug || e.id,
+              tagline: e.tagline || '',
+              description: e.description,
+              full_content: e.fullContent || '',
+              category: e.category,
+              status: e.status,
+              banner_image: e.bannerImage || '',
+              date: e.date,
+              display_date: e.displayDate || e.date,
+              time: e.time || '',
+              venue: e.venue || '',
+              registration_deadline: e.registrationDeadline || e.date,
+              registration_open: e.registrationOpen ?? true,
+              registration_link: e.registrationLink || '',
+              max_participants: e.maxParticipants || 200,
+              registered_count: e.registeredCount || 0,
+              is_featured: e.isFeatured || false,
+              is_published: e.isPublished ?? false,
+            }));
+            supabase.from('events').upsert(rows, { onConflict: 'id' }).then(() => {});
+          }
         }
+
         if (teamRes.data && teamRes.data.length > 0) {
           const mapped = mapTeamMembers(teamRes.data);
           setTeamMembers(mapped);
           setStored(TEAM_KEY, mapped);
+        } else if (teamRes.data && teamRes.data.length === 0) {
+          // Auto-seed initial team members to Supabase so Cloud DB is ready for cross-browser sync
+          const localTeam = getStored<TeamMember[]>(TEAM_KEY, defaultTeamMembers);
+          if (localTeam.length > 0) {
+            const rows = localTeam.map(m => ({
+              id: m.id,
+              name: m.name,
+              position: m.position,
+              department: m.department,
+              bio: m.bio || '',
+              photo: m.photo || '',
+              year: m.year || '',
+              branch: m.branch || '',
+              linkedin: m.linkedin || '',
+              instagram: m.instagram || '',
+              github: m.github || '',
+              email: m.email || '',
+              display_order: m.display_order || m.order || 1,
+              is_active: m.isActive ?? true,
+            }));
+            supabase.from('team_members').upsert(rows, { onConflict: 'id' }).then(() => {});
+          }
         }
+
         if (messagesRes.data) {
           setMessages(mapMessages(messagesRes.data));
         }
@@ -211,7 +263,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('events').insert({
+        await supabase.from('events').upsert({
           id: newId,
           title: eventData.title,
           slug: eventData.slug || newId,
@@ -232,7 +284,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           registered_count: 0,
           is_featured: eventData.isFeatured,
           is_published: eventData.isPublished ?? false,
-        });
+        }, { onConflict: 'id' });
       } catch (err) {
         console.error('Supabase insert event notice:', err);
       }
@@ -240,36 +292,44 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateEvent = async (id: string, updates: Partial<Event>) => {
+    let fullItem: Event | undefined;
     setEvents(prev => {
-      const updated = prev.map(evt => evt.id === id ? { ...evt, ...updates } : evt);
+      const updated = prev.map(evt => {
+        if (evt.id === id) {
+          fullItem = { ...evt, ...updates };
+          return fullItem;
+        }
+        return evt;
+      });
       setStored(EVENTS_KEY, updated);
       return updated;
     });
 
-    if (isSupabaseConfigured && supabase) {
+    if (isSupabaseConfigured && supabase && fullItem) {
       try {
-        const dbUpdates: any = {};
-        if (updates.title !== undefined) dbUpdates.title = updates.title;
-        if (updates.slug !== undefined) dbUpdates.slug = updates.slug;
-        if (updates.tagline !== undefined) dbUpdates.tagline = updates.tagline;
-        if (updates.description !== undefined) dbUpdates.description = updates.description;
-        if (updates.fullContent !== undefined) dbUpdates.full_content = updates.fullContent;
-        if (updates.category !== undefined) dbUpdates.category = updates.category;
-        if (updates.status !== undefined) dbUpdates.status = updates.status;
-        if (updates.bannerImage !== undefined) dbUpdates.banner_image = updates.bannerImage;
-        if (updates.date !== undefined) dbUpdates.date = updates.date;
-        if (updates.displayDate !== undefined) dbUpdates.display_date = updates.displayDate;
-        if (updates.time !== undefined) dbUpdates.time = updates.time;
-        if (updates.venue !== undefined) dbUpdates.venue = updates.venue;
-        if (updates.registrationDeadline !== undefined) dbUpdates.registration_deadline = updates.registrationDeadline;
-        if (updates.registrationOpen !== undefined) dbUpdates.registration_open = updates.registrationOpen;
-        if (updates.registrationLink !== undefined) dbUpdates.registration_link = updates.registrationLink;
-        if (updates.maxParticipants !== undefined) dbUpdates.max_participants = updates.maxParticipants;
-        if (updates.isFeatured !== undefined) dbUpdates.is_featured = updates.isFeatured;
-        if (updates.isPublished !== undefined) dbUpdates.is_published = updates.isPublished;
-        dbUpdates.updated_at = new Date().toISOString();
-
-        await supabase.from('events').update(dbUpdates).eq('id', id);
+        await supabase.from('events').upsert({
+          id: id,
+          title: fullItem.title,
+          slug: fullItem.slug || id,
+          tagline: fullItem.tagline || '',
+          description: fullItem.description,
+          full_content: fullItem.fullContent || '',
+          category: fullItem.category,
+          status: fullItem.status,
+          banner_image: fullItem.bannerImage || '',
+          date: fullItem.date,
+          display_date: fullItem.displayDate || fullItem.date,
+          time: fullItem.time || '',
+          venue: fullItem.venue || '',
+          registration_deadline: fullItem.registrationDeadline || fullItem.date,
+          registration_open: fullItem.registrationOpen ?? true,
+          registration_link: fullItem.registrationLink || '',
+          max_participants: fullItem.maxParticipants || 200,
+          registered_count: fullItem.registeredCount || 0,
+          is_featured: fullItem.isFeatured || false,
+          is_published: fullItem.isPublished ?? false,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
       } catch (err) {
         console.error('Supabase update event notice:', err);
       }
@@ -304,7 +364,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('team_members').insert({
+        await supabase.from('team_members').upsert({
           id: newId,
           name: memberData.name,
           position: memberData.position,
@@ -319,7 +379,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: memberData.email,
           display_order: memberData.display_order || memberData.order || 1,
           is_active: memberData.isActive ?? true,
-        });
+        }, { onConflict: 'id' });
       } catch (err) {
         console.error('Supabase insert team member notice:', err);
       }
@@ -327,31 +387,38 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateTeamMember = async (id: string, updates: Partial<TeamMember>) => {
+    let fullMember: TeamMember | undefined;
     setTeamMembers(prev => {
-      const updated = prev.map(tm => tm.id === id ? { ...tm, ...updates } : tm);
+      const updated = prev.map(tm => {
+        if (tm.id === id) {
+          fullMember = { ...tm, ...updates };
+          return fullMember;
+        }
+        return tm;
+      });
       setStored(TEAM_KEY, updated);
       return updated;
     });
 
-    if (isSupabaseConfigured && supabase) {
+    if (isSupabaseConfigured && supabase && fullMember) {
       try {
-        const dbUpdates: any = {};
-        if (updates.name !== undefined) dbUpdates.name = updates.name;
-        if (updates.position !== undefined) dbUpdates.position = updates.position;
-        if (updates.department !== undefined) dbUpdates.department = updates.department;
-        if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
-        if (updates.photo !== undefined) dbUpdates.photo = updates.photo;
-        if (updates.year !== undefined) dbUpdates.year = updates.year;
-        if (updates.branch !== undefined) dbUpdates.branch = updates.branch;
-        if (updates.linkedin !== undefined) dbUpdates.linkedin = updates.linkedin;
-        if (updates.instagram !== undefined) dbUpdates.instagram = updates.instagram;
-        if (updates.github !== undefined) dbUpdates.github = updates.github;
-        if (updates.email !== undefined) dbUpdates.email = updates.email;
-        if (updates.display_order !== undefined) dbUpdates.display_order = updates.display_order;
-        if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
-        dbUpdates.updated_at = new Date().toISOString();
-
-        await supabase.from('team_members').update(dbUpdates).eq('id', id);
+        await supabase.from('team_members').upsert({
+          id: id,
+          name: fullMember.name,
+          position: fullMember.position,
+          department: fullMember.department,
+          bio: fullMember.bio || '',
+          photo: fullMember.photo || '',
+          year: fullMember.year || '',
+          branch: fullMember.branch || '',
+          linkedin: fullMember.linkedin || '',
+          instagram: fullMember.instagram || '',
+          github: fullMember.github || '',
+          email: fullMember.email || '',
+          display_order: fullMember.display_order || fullMember.order || 1,
+          is_active: fullMember.isActive ?? true,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
       } catch (err) {
         console.error('Supabase update team member notice:', err);
       }
