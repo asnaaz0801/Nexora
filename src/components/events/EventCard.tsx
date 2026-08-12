@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, Users, ArrowRight } from 'lucide-react';
 import { Event } from '../../types';
 import { Card } from '../common/Card';
 import { Badge } from '../common/Badge';
+import { handleImageError, DEFAULT_BANNER_SVG } from '../../lib/imageUtils';
 
 interface EventCardProps {
   event: Event;
@@ -22,8 +23,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onRegisterClick }) 
       {/* Banner Image Container */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900">
         <img
-          src={event.bannerImage}
+          src={event.bannerImage || DEFAULT_BANNER_SVG}
           alt={event.title}
+          onError={(e) => handleImageError(e)}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />

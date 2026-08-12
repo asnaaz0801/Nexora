@@ -11,6 +11,7 @@ import {
   Info,
   Layers
 } from 'lucide-react';
+import { handleImageError } from '../../lib/imageUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 interface EcosystemNode {
@@ -170,6 +171,7 @@ export const EcosystemGraph: React.FC = () => {
                 <img
                   src={nexoraLogo}
                   alt="Nexora Center Core"
+                  onError={(e) => handleImageError(e, nexoraLogo)}
                   className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(0,210,255,0.6)]"
                 />
               </div>

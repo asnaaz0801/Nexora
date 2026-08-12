@@ -5,7 +5,7 @@ import { TeamMember } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/common/Modal';
 import { Button } from '../../components/common/Button';
-import { uploadOrCompressPhoto } from '../../lib/imageUtils';
+import { uploadOrCompressPhoto, handleAvatarError, getAvatarFallback } from '../../lib/imageUtils';
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-surface border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-nexora-500 transition-colors";
 const labelClass = "block text-xs font-semibold text-slate-300 mb-1.5";
@@ -208,8 +208,9 @@ export const AdminTeamPage: React.FC = () => {
                           <td className="p-4">
                             <div className="flex items-center gap-3">
                               <img
-                                src={tm.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(tm.name)}&background=0D1117&color=00D2FF&size=80`}
+                                src={tm.photo || getAvatarFallback(tm.name)}
                                 alt={tm.name}
+                                onError={(e) => handleAvatarError(e, tm.name)}
                                 className="w-10 h-10 rounded-xl object-cover bg-slate-900 shrink-0 border border-slate-700"
                               />
                               <div>
@@ -330,7 +331,12 @@ export const AdminTeamPage: React.FC = () => {
             <div className="flex items-start gap-3">
               {formData.photo ? (
                 <div className="relative">
-                  <img src={formData.photo} alt="Preview" className="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-700" />
+                  <img
+                    src={formData.photo || getAvatarFallback(formData.name)}
+                    alt="Preview"
+                    onError={(e) => handleAvatarError(e, formData.name)}
+                    className="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-700"
+                  />
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, photo: '' })}

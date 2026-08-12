@@ -13,6 +13,7 @@ import {
   Share2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { handleImageError } from '../../lib/imageUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 export const AdminSidebar: React.FC = () => {
@@ -41,7 +42,7 @@ export const AdminSidebar: React.FC = () => {
         <div className="p-5 border-b border-slate-800">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-xl bg-black border border-nexora-500/30 p-1">
-              <img src={nexoraLogo} alt="Logo" className="w-full h-full object-contain" />
+              <img src={nexoraLogo} alt="Logo" onError={(e) => handleImageError(e, nexoraLogo)} className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="font-heading font-black text-sm text-white tracking-wider">

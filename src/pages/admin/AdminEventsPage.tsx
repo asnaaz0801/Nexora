@@ -5,7 +5,7 @@ import { Event, EventCategory, EventStatus } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/common/Modal';
 import { Button } from '../../components/common/Button';
-import { uploadOrCompressPhoto } from '../../lib/imageUtils';
+import { uploadOrCompressPhoto, handleImageError, DEFAULT_BANNER_SVG } from '../../lib/imageUtils';
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-surface border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-nexora-500 transition-colors";
 const labelClass = "block text-xs font-semibold text-slate-300 mb-1.5";
@@ -174,14 +174,12 @@ export const AdminEventsPage: React.FC = () => {
                     <tr key={evt.id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="p-4 max-w-xs">
                         <div className="flex items-center gap-3">
-                          {evt.bannerImage ? (
-                            <img src={evt.bannerImage} alt={evt.title}
-                              className="w-12 h-9 rounded-lg object-cover bg-slate-900 shrink-0" />
-                          ) : (
-                            <div className="w-12 h-9 rounded-lg bg-slate-900 border border-slate-700 shrink-0 flex items-center justify-center text-slate-600">
-                              <span className="text-[10px]">IMG</span>
-                            </div>
-                          )}
+                          <img
+                            src={evt.bannerImage || DEFAULT_BANNER_SVG}
+                            alt={evt.title}
+                            onError={(e) => handleImageError(e)}
+                            className="w-12 h-9 rounded-lg object-cover bg-slate-900 shrink-0 border border-slate-700/80"
+                          />
                           <div className="truncate">
                             <p className="font-bold text-sm text-white truncate">{evt.title}</p>
                             {evt.tagline && <p className="text-[10px] text-slate-400 truncate">{evt.tagline}</p>}
@@ -323,7 +321,12 @@ export const AdminEventsPage: React.FC = () => {
             <label className={labelClass}>Banner Image (Upload or URL)</label>
             {formData.bannerImage ? (
               <div className="relative inline-block mb-3">
-                <img src={formData.bannerImage} alt="Banner Preview" className="w-32 h-20 rounded-xl object-cover bg-slate-900 border border-slate-700" />
+                <img
+                  src={formData.bannerImage || DEFAULT_BANNER_SVG}
+                  alt="Banner Preview"
+                  onError={(e) => handleImageError(e)}
+                  className="w-32 h-20 rounded-xl object-cover bg-slate-900 border border-slate-700"
+                />
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, bannerImage: '' })}

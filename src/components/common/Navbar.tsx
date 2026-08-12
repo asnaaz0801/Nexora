@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { handleImageError } from '../../lib/imageUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 export const Navbar: React.FC = () => {
@@ -56,6 +57,7 @@ export const Navbar: React.FC = () => {
             <img
               src={nexoraLogo}
               alt="Nexora E-Cell Logo"
+              onError={(e) => handleImageError(e, nexoraLogo)}
               className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300"
             />
             <div className="absolute inset-0 bg-nexora-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />

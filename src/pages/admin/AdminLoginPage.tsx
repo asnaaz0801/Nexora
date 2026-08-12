@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Shield, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/common/Button';
+import { handleImageError } from '../../lib/imageUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 export const AdminLoginPage: React.FC = () => {
@@ -57,7 +58,7 @@ export const AdminLoginPage: React.FC = () => {
           {/* Logo & Title */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-black border border-nexora-500/30 p-2 mx-auto mb-4 shadow-glow-sm">
-              <img src={nexoraLogo} alt="Nexora Logo" className="w-full h-full object-contain" />
+              <img src={nexoraLogo} alt="Nexora Logo" onError={(e) => handleImageError(e, nexoraLogo)} className="w-full h-full object-contain" />
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300 mb-3">
               <Shield className="w-3.5 h-3.5" />

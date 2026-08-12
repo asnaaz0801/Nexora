@@ -3,6 +3,7 @@ import { Users, X, Mail, Crown, Star, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Linkedin, Instagram, Github } from '../components/common/SocialIcons';
 import { useData } from '../context/DataContext';
+import { handleAvatarError, getAvatarFallback } from '../lib/imageUtils';
 import { TeamMember } from '../types';
 
 export const TeamPage: React.FC = () => {
@@ -129,8 +130,9 @@ export const TeamPage: React.FC = () => {
                           {/* Image container */}
                           <div className="relative aspect-square rounded-2xl overflow-hidden mb-5 bg-slate-900 border border-slate-700/80 group-hover:border-nexora-400/50 transition-colors">
                             <img
-                              src={exec.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.name)}&background=0D1117&color=00D2FF&size=400`}
+                              src={exec.photo || getAvatarFallback(exec.name)}
                               alt={exec.name}
+                              onError={(e) => handleAvatarError(e, exec.name)}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
@@ -237,8 +239,9 @@ export const TeamPage: React.FC = () => {
                       {/* Photo container */}
                       <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-slate-900 border border-slate-700/80 group-hover:border-nexora-400/50 transition-colors">
                         <img
-                          src={member.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0D1117&color=00D2FF&size=400`}
+                          src={member.photo || getAvatarFallback(member.name)}
                           alt={member.name}
+                          onError={(e) => handleAvatarError(e, member.name)}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
                         />
@@ -327,8 +330,9 @@ export const TeamPage: React.FC = () => {
               {/* Top image section */}
               <div className="relative h-56 bg-slate-900 overflow-hidden">
                 <img
-                  src={selectedMember.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=0D1117&color=00D2FF&size=400`}
+                  src={selectedMember.photo || getAvatarFallback(selectedMember.name)}
                   alt={selectedMember.name}
+                  onError={(e) => handleAvatarError(e, selectedMember.name)}
                   className="w-full h-full object-cover opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated via-surface-elevated/20 to-transparent" />

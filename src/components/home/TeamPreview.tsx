@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Users, ArrowRight } from 'lucide-react';
 import { Linkedin, Instagram, Github } from '../common/SocialIcons';
 import { useData } from '../../context/DataContext';
+import { handleAvatarError, getAvatarFallback } from '../../lib/imageUtils';
 
 export const TeamPreview: React.FC = () => {
   const { teamMembers } = useData();
@@ -50,8 +51,9 @@ export const TeamPreview: React.FC = () => {
                 {/* Photo with glow border */}
                 <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-slate-900 border border-slate-700/80 group-hover:border-nexora-400/50 transition-colors">
                   <img
-                    src={member.photo}
+                    src={member.photo || getAvatarFallback(member.name)}
                     alt={member.name}
+                    onError={(e) => handleAvatarError(e, member.name)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />

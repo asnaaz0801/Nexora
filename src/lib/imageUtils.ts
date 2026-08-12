@@ -1,6 +1,46 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 
 /**
+ * Fallback SVG Data URIs for offline or broken image URLs
+ */
+export const DEFAULT_AVATAR_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none"><rect width="400" height="400" fill="%230D1117"/><circle cx="200" cy="140" r="65" fill="%231E293B" stroke="%2300D2FF" stroke-width="3"/><path d="M90 340C90 279.249 139.249 230 200 230C260.751 230 310 279.249 310 340H90Z" fill="%231E293B" stroke="%2300D2FF" stroke-width="3"/></svg>`;
+
+export const DEFAULT_BANNER_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none"><rect width="800" height="450" fill="%230D1117"/><rect x="15" y="15" width="770" height="420" rx="16" fill="%23161F2E" stroke="%23334155" stroke-width="2"/><path d="M250 300L350 180L450 280L550 150L650 300H250Z" fill="%231E293B" stroke="%2300D2FF" stroke-width="2"/><circle cx="300" cy="140" r="35" fill="%2300D2FF" fill-opacity="0.2" stroke="%2300D2FF" stroke-width="2"/><text x="400" y="370" font-family="sans-serif" font-size="22" font-weight="bold" fill="%2394A3B8" text-anchor="middle">NEXORA E-CELL</text></svg>`;
+
+export function getAvatarFallback(name?: string): string {
+  if (name && name.trim()) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=0D1117&color=00D2FF&size=400`;
+  }
+  return DEFAULT_AVATAR_SVG;
+}
+
+/**
+ * Event handler attached to <img> elements to gracefully handle broken image URLs.
+ */
+export function handleImageError(
+  e: React.SyntheticEvent<HTMLImageElement, Event>,
+  fallbackUrl?: string
+) {
+  const target = e.currentTarget;
+  if (target.dataset.hasFailed) return; // Prevent infinite loop if fallback fails
+  target.dataset.hasFailed = 'true';
+  target.src = fallbackUrl || DEFAULT_BANNER_SVG;
+}
+
+/**
+ * Event handler attached to team member <img> elements to fall back to UI-Avatars or SVG avatar.
+ */
+export function handleAvatarError(
+  e: React.SyntheticEvent<HTMLImageElement, Event>,
+  name?: string
+) {
+  const target = e.currentTarget;
+  if (target.dataset.hasFailed) return; // Prevent infinite loop if fallback fails
+  target.dataset.hasFailed = 'true';
+  target.src = getAvatarFallback(name);
+}
+
+/**
  * Resizes and compresses an image file using HTML Canvas to produce a lightweight Data URL.
  * Typically reduces a 2MB–8MB photo to ~30KB–60KB WebP/JPEG data URL.
  */

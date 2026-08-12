@@ -16,6 +16,7 @@ import {
   Layers
 } from 'lucide-react';
 import nexoraLogo from '../assets/nexora-logo.png';
+import { handleImageError } from '../lib/imageUtils';
 
 export const AboutPage: React.FC = () => {
   useEffect(() => {
@@ -55,6 +56,7 @@ export const AboutPage: React.FC = () => {
                 <img
                   src={nexoraLogo}
                   alt="Nexora E-Cell Emblem"
+                  onError={(e) => handleImageError(e, nexoraLogo)}
                   className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(0,210,255,0.4)]"
                 />
               </div>

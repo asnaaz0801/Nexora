@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Calendar, Tag } from 'lucide-react';
 import { GalleryItem } from '../../types';
+import { handleImageError, DEFAULT_BANNER_SVG } from '../../lib/imageUtils';
 
 interface LightboxModalProps {
   item: GalleryItem | null;
@@ -45,8 +46,9 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({ item, onClose }) =
         {/* Large Image */}
         <div className="aspect-[16/10] w-full bg-black flex items-center justify-center overflow-hidden">
           <img
-            src={item.imageUrl}
+            src={item.imageUrl || DEFAULT_BANNER_SVG}
             alt={item.title}
+            onError={(e) => handleImageError(e)}
             className="w-full h-full object-contain"
           />
         </div>

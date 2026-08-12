@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Linkedin } from '../components/common/SocialIcons';
 import { useData } from '../context/DataContext';
+import { handleImageError, DEFAULT_BANNER_SVG } from '../lib/imageUtils';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { EventRegistrationModal } from '../components/events/EventRegistrationModal';
@@ -66,8 +67,9 @@ export const EventDetailPage: React.FC = () => {
         {/* Hero Banner Container */}
         <div className="relative rounded-3xl overflow-hidden aspect-[21/9] w-full bg-slate-900 border border-slate-800 shadow-2xl mb-10">
           <img
-            src={event.bannerImage}
+            src={event.bannerImage || DEFAULT_BANNER_SVG}
             alt={event.title}
+            onError={(e) => handleImageError(e)}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />

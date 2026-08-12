@@ -8,6 +8,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Linkedin, Instagram, Github } from './SocialIcons';
+import { handleImageError } from '../../lib/imageUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { useSiteContent } from '../../hooks/useSiteContent';
 
@@ -50,6 +51,7 @@ export const Footer: React.FC = () => {
                 <img
                   src={nexoraLogo}
                   alt="Nexora Official Logo"
+                  onError={(e) => handleImageError(e, nexoraLogo)}
                   className="w-full h-full object-contain"
                 />
               </div>
