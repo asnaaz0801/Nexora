@@ -10,8 +10,6 @@ import {
   Sparkles,
   ArrowUpRight 
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
 export const WhyNexoraSection: React.FC = () => {
   const pillars = [
     {
@@ -124,16 +122,6 @@ export const WhyNexoraSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Action Link */}
-        <div className="mt-12 text-center">
-          <Link
-            to="/join"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white bg-surface-elevated hover:bg-slate-800 border border-slate-700/80 hover:border-nexora-500/40 shadow-sm transition-all"
-          >
-            <span>Ready to turn your ambition into action? Apply for Nexora Wings</span>
-            <ArrowUpRight className="w-4 h-4 text-nexora-400" />
-          </Link>
-        </div>
 
       </div>
     </section>
