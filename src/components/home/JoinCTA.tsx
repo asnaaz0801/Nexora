@@ -55,10 +55,10 @@ export const JoinCTA: React.FC = () => {
             </Link>
 
             <Link
-              to="/contact"
+              to="/team"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white bg-surface border border-slate-800 hover:border-slate-700 transition-colors"
             >
-              <span>Have Questions? Contact Us</span>
+              <span>Meet Executive Team</span>
             </Link>
           </div>
 

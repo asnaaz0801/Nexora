@@ -65,33 +65,43 @@ export const EventDetailPage: React.FC = () => {
         </div>
 
         {/* Hero Banner Container */}
-        <div className="relative rounded-3xl overflow-hidden aspect-[21/9] w-full bg-slate-900 border border-slate-800 shadow-2xl mb-10">
+        <div className="relative rounded-3xl overflow-hidden min-h-[300px] max-h-[560px] w-full bg-slate-950 border border-slate-800 shadow-2xl mb-10 flex items-center justify-center">
+          {/* Ambient Blurred Backdrop */}
+          <img
+            src={event.bannerImage || DEFAULT_BANNER_SVG}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent pointer-events-none" />
+
+          {/* Main Uncropped Poster Image */}
           <img
             src={event.bannerImage || DEFAULT_BANNER_SVG}
             alt={event.title}
             onError={(e) => handleImageError(e)}
-            className="w-full h-full object-cover"
+            className="relative z-10 max-h-[560px] w-full object-contain mx-auto py-2"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-          
-          <div className="absolute top-4 right-4 flex items-center gap-2">
+
+          {/* Top Actions (Share) */}
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="p-2 rounded-xl bg-black/70 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="p-2.5 rounded-xl bg-black/70 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white transition-colors shadow-lg"
               title="Share event link"
             >
               <Share2 className="w-4 h-4" />
             </button>
             {copied && (
-              <span className="px-2.5 py-1 rounded bg-black/80 text-xs text-nexora-300 font-semibold">
+              <span className="px-3 py-1 rounded-xl bg-black/80 text-xs text-nexora-300 font-semibold border border-nexora-500/30 backdrop-blur-md shadow-lg">
                 Link Copied!
               </span>
             )}
           </div>
 
-          <div className="absolute bottom-6 left-6 right-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
+          {/* Bottom Overlay Title & Badges */}
+          <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-20 flex flex-wrap items-end justify-between gap-4 pointer-events-none">
+            <div className="pointer-events-auto bg-black/50 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl border border-white/10 max-w-2xl shadow-2xl">
+              <div className="flex items-center gap-2 mb-1.5">
                 <Badge variant={event.status === 'live' ? 'warning' : 'cyan'}>
                   <span className="capitalize">{event.status}</span>
                 </Badge>
@@ -99,7 +109,7 @@ export const EventDetailPage: React.FC = () => {
                   {event.category}
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-heading text-white">
+              <h1 className="text-xl sm:text-3xl md:text-4xl font-black font-heading text-white">
                 {event.title}
               </h1>
             </div>

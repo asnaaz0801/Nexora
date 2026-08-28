@@ -30,7 +30,6 @@ export const Navbar: React.FC = () => {
     { name: 'Vision & Mission', path: '/vision-mission' },
     { name: 'Events', path: '/events' },
     { name: 'Team', path: '/team' },
-    { name: 'Contact', path: '/contact' },
   ];
 
   const isActive = (path: string) => {

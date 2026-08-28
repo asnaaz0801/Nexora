@@ -21,18 +21,25 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onRegisterClick }) 
   return (
     <Card className="flex flex-col h-full group">
       {/* Banner Image Container */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900">
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950 flex items-center justify-center">
+        {/* Ambient Blur Backdrop */}
+        <img
+          src={event.bannerImage || DEFAULT_BANNER_SVG}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none"
+        />
+        {/* Main Poster Image */}
         <img
           src={event.bannerImage || DEFAULT_BANNER_SVG}
           alt={event.title}
           onError={(e) => handleImageError(e)}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="absolute inset-0 z-15 bg-gradient-to-t from-background via-background/10 to-transparent pointer-events-none" />
 
         {/* Top Badges */}
-        <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-none">
+        <div className="absolute top-3 inset-x-3 z-20 flex items-center justify-between pointer-events-none">
           <Badge variant={statusBadgeVariant[event.status] || 'cyan'}>
             <span className={`w-1.5 h-1.5 rounded-full ${event.status === 'live' ? 'bg-amber-400 animate-ping' : 'bg-current'}`} />
             <span className="capitalize">{event.status}</span>

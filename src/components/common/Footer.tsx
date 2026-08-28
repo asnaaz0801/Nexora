@@ -34,7 +34,6 @@ export const Footer: React.FC = () => {
     { name: 'Vision & Mission', path: '/vision-mission' },
     { name: 'Upcoming Events', path: '/events' },
     { name: 'Our Team', path: '/team' },
-    { name: 'Contact Us', path: '/contact' },
   ];
 
   return (

@@ -14,7 +14,6 @@ import { VisionMissionPage } from './pages/VisionMissionPage';
 import { EventsPage } from './pages/EventsPage';
 import { EventDetailPage } from './pages/EventDetailPage';
 import { TeamPage } from './pages/TeamPage';
-import { ContactPage } from './pages/ContactPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Admin Pages
@@ -41,7 +40,6 @@ export const App: React.FC = () => {
               <Route path="events" element={<EventsPage />} />
               <Route path="events/:id" element={<EventDetailPage />} />
               <Route path="team" element={<TeamPage />} />
-              <Route path="contact" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
 

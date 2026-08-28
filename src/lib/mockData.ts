@@ -328,7 +328,7 @@ export const initialInitiatives: Initiative[] = [
     badge: '1-on-1 Guidance',
     statsLabel: '15+ Industry Mentors',
     ctaText: 'Book Office Hours',
-    ctaLink: '/contact'
+    ctaLink: '/events'
   },
   {
     id: 'init-07',
@@ -341,7 +341,7 @@ export const initialInitiatives: Initiative[] = [
     badge: 'Legal & IPR',
     statsLabel: '5 Patents Filed',
     ctaText: 'Consult IPR Cell',
-    ctaLink: '/contact'
+    ctaLink: '/events'
   },
   {
     id: 'init-08',
