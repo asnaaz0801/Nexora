@@ -151,7 +151,7 @@ export const TeamPage: React.FC = () => {
                               src={exec.photo || getAvatarFallback(exec.name)}
                               alt={exec.name}
                               onError={(e) => handleAvatarError(e, exec.name)}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
                             
@@ -242,7 +242,7 @@ export const TeamPage: React.FC = () => {
                           src={member.photo || getAvatarFallback(member.name)}
                           alt={member.name}
                           onError={(e) => handleAvatarError(e, member.name)}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
@@ -328,12 +328,12 @@ export const TeamPage: React.FC = () => {
               className="w-full max-w-lg bg-surface-elevated border border-nexora-500/30 rounded-3xl shadow-2xl overflow-hidden"
             >
               {/* Top image section */}
-              <div className="relative h-56 bg-slate-900 overflow-hidden">
+              <div className="relative h-64 sm:h-72 bg-slate-900 overflow-hidden">
                 <img
                   src={selectedMember.photo || getAvatarFallback(selectedMember.name)}
                   alt={selectedMember.name}
                   onError={(e) => handleAvatarError(e, selectedMember.name)}
-                  className="w-full h-full object-cover opacity-90"
+                  className="w-full h-full object-cover object-top opacity-95"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated via-surface-elevated/20 to-transparent" />
                 

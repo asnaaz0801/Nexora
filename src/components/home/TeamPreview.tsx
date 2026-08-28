@@ -54,7 +54,7 @@ export const TeamPreview: React.FC = () => {
                     src={member.photo || getAvatarFallback(member.name)}
                     alt={member.name}
                     onError={(e) => handleAvatarError(e, member.name)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />

@@ -211,7 +211,7 @@ export const AdminTeamPage: React.FC = () => {
                                 src={tm.photo || getAvatarFallback(tm.name)}
                                 alt={tm.name}
                                 onError={(e) => handleAvatarError(e, tm.name)}
-                                className="w-10 h-10 rounded-xl object-cover bg-slate-900 shrink-0 border border-slate-700"
+                                className="w-10 h-10 rounded-xl object-cover object-top bg-slate-900 shrink-0 border border-slate-700"
                               />
                               <div>
                                 <p className="font-bold text-sm text-white flex items-center gap-1.5">
@@ -335,7 +335,7 @@ export const AdminTeamPage: React.FC = () => {
                     src={formData.photo || getAvatarFallback(formData.name)}
                     alt="Preview"
                     onError={(e) => handleAvatarError(e, formData.name)}
-                    className="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-700"
+                    className="w-16 h-16 rounded-xl object-cover object-top bg-slate-900 border border-slate-700"
                   />
                   <button
                     type="button"
