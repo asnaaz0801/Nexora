@@ -73,15 +73,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onRegisterClick }) 
           </div>
         </div>
 
-        {/* Bottom CTA / Participant Stats */}
-        <div className="pt-2 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
-            <Users className="w-3.5 h-3.5 text-nexora-400" />
-            <span><strong>{event.registeredCount || 0}</strong> registered</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {event.status === 'upcoming' && event.registrationOpen && onRegisterClick ? (
+        {/* Bottom CTA */}
+        <div className="pt-2 flex items-center justify-end gap-2">
+          {event.status === 'upcoming' && event.registrationOpen && onRegisterClick ? (
               <button
                 onClick={() => onRegisterClick(event)}
                 className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-nexora-400 hover:bg-nexora-300 shadow-glow-sm transition-all"
@@ -99,7 +93,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onRegisterClick }) 
             </Link>
           </div>
         </div>
-      </div>
     </Card>
   );
 };

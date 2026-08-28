@@ -245,14 +245,6 @@ export const EventDetailPage: React.FC = () => {
                       <p className="text-sm font-semibold text-white">{event.venue}</p>
                     </div>
                   </div>
-
-                  <div className="flex items-start gap-3">
-                    <Users className="w-4 h-4 text-nexora-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-slate-400">Seats & Registrations</p>
-                      <p className="text-sm font-semibold text-white">{event.registeredCount || 0} / {event.maxParticipants || 300} Registered</p>
-                    </div>
-                  </div>
                 </div>
               </div>
 
