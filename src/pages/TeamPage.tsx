@@ -71,7 +71,7 @@ export const TeamPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-nexora-500/10 border border-nexora-500/30 text-xs font-semibold text-nexora-300 uppercase tracking-widest mb-4">
             <Users className="w-4 h-4 text-nexora-400" />
             <span>Nexora Executive & Core Wing</span>
@@ -81,9 +81,27 @@ export const TeamPage: React.FC = () => {
             The Minds Behind <span className="text-gradient-cyan">Nexora</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300">
+          <p className="text-base sm:text-lg text-slate-300 mb-8">
             Led by our Executive President and Vice President, a dedicated team of student engineers, designers, communicators, and community organizers driving the ACET entrepreneurship ecosystem.
           </p>
+
+          {/* Department Filter Pills */}
+          <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Filter Wing:</span>
+            {departments.map((dept) => (
+              <button
+                key={dept}
+                onClick={() => setSelectedDept(dept)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedDept === dept
+                    ? 'bg-nexora-500 text-slate-950 shadow-glow-sm scale-105'
+                    : 'bg-surface text-slate-400 hover:text-white border border-slate-800'
+                }`}
+              >
+                {dept}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Loading State */}
@@ -100,11 +118,11 @@ export const TeamPage: React.FC = () => {
         )}
 
         {!isLoading && (
-          <>
+          <div className="space-y-8">
             {/* 👑 EXECUTIVE LEADERSHIP TIER (President & Vice President) 👑 */}
-            {executives.length > 0 && selectedDept === 'All' && (
-              <div className="mb-16">
-                <div className="text-center mb-8">
+            {executives.length > 0 && (selectedDept === 'All' || selectedDept === 'Leadership') && (
+              <div>
+                <div className="text-center mb-6">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-300 uppercase tracking-widest">
                     <Crown className="w-3.5 h-3.5 text-amber-400" />
                     <span>Executive Leadership</span>
@@ -197,35 +215,17 @@ export const TeamPage: React.FC = () => {
               </div>
             )}
 
-            {/* Department Filter Pills */}
-            <div className="flex items-center justify-center gap-2 flex-wrap pb-4 mb-12 border-t border-slate-800/80 pt-10">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Filter Wing:</span>
-              {departments.map((dept) => (
-                <button
-                  key={dept}
-                  onClick={() => setSelectedDept(dept)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                    selectedDept === dept
-                      ? 'bg-nexora-500 text-slate-950 shadow-glow-sm scale-105'
-                      : 'bg-surface text-slate-400 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  {dept}
-                </button>
-              ))}
-            </div>
-
             {/* Empty State */}
-            {filteredOtherTeam.length === 0 && (
+            {filteredOtherTeam.length === 0 && executives.length === 0 && (
               <div className="text-center py-16">
                 <Users className="w-12 h-12 text-slate-700 mx-auto mb-3" />
                 <p className="text-slate-400 text-base font-medium">
-                  {selectedDept === 'All' ? 'Additional core team members will be displayed here.' : `No members found in ${selectedDept}.`}
+                  {selectedDept === 'All' ? 'Team members will be displayed here.' : `No members found in ${selectedDept}.`}
                 </p>
               </div>
             )}
 
-            {/* Core Wing Grid */}
+            {/* Core Wing Grid - Directly below President & VP */}
             {filteredOtherTeam.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredOtherTeam.map((member) => (
@@ -305,7 +305,7 @@ export const TeamPage: React.FC = () => {
                 ))}
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 

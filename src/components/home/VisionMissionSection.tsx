@@ -13,55 +13,65 @@ import {
   TrendingUp,
   Sparkles
 } from 'lucide-react';
+import { useSiteContent } from '../../hooks/useSiteContent';
 
 export const VisionMissionSection: React.FC = () => {
+  const { getContent } = useSiteContent();
+
+  const visionHeading = getContent('vision', 'heading') || 'Our Vision';
+  const visionContent = getContent('vision', 'content') || 'To build a vibrant entrepreneurial ecosystem where innovation thrives, ideas transform into impactful ventures, and every student is empowered to become a visionary leader, problem solver, and changemaker for society.';
+
+  const missionBadge   = getContent('mission', 'badge') || 'OUR MISSION';
+  const missionHeading = getContent('mission', 'heading') || 'Transforming Ideas into Sustainable Ventures';
+  const missionQuote   = getContent('mission', 'quote') || getContent('mission', 'content') || 'To nurture entrepreneurial talent by organizing workshops, hackathons, startup events, mentorship programs, and industry collaborations that empower students to innovate, lead, and transform ideas into sustainable ventures.';
+
   const missionCards = [
     {
       icon: Wrench,
-      title: "Workshops",
-      desc: "Deep-dive sessions on system design, venture economics, and rapid prototyping.",
+      title: getContent('mission', 'card_1_title') || "Workshops",
+      desc: getContent('mission', 'card_1_desc') || "Deep-dive sessions on system design, venture economics, and rapid prototyping.",
       color: "from-cyan-500/20 to-blue-500/10"
     },
     {
       icon: Terminal,
-      title: "Hackathons",
-      desc: "36-hour sprint challenges solving smart infrastructure, AI, and civic tech problems.",
+      title: getContent('mission', 'card_2_title') || "Hackathons",
+      desc: getContent('mission', 'card_2_desc') || "36-hour sprint challenges solving smart infrastructure, AI, and civic tech problems.",
       color: "from-blue-500/20 to-indigo-500/10"
     },
     {
       icon: Rocket,
-      title: "Startup Events",
-      desc: "Annual E-Summits, pitch competitions, and regional venture expos.",
+      title: getContent('mission', 'card_3_title') || "Startup Events",
+      desc: getContent('mission', 'card_3_desc') || "Annual E-Summits, pitch competitions, and regional venture expos.",
       color: "from-sky-500/20 to-cyan-500/10"
     },
     {
       icon: Compass,
-      title: "Mentorship",
-      desc: "Structured guidance from alumni founders, architects, and angel investors.",
+      title: getContent('mission', 'card_4_title') || "Mentorship",
+      desc: getContent('mission', 'card_4_desc') || "Structured guidance from alumni founders, architects, and angel investors.",
       color: "from-indigo-500/20 to-purple-500/10"
     },
     {
       icon: Building2,
-      title: "Industry Collaboration",
-      desc: "Partnerships with tech companies, incubation centers, and government bodies.",
+      title: getContent('mission', 'card_5_title') || "Industry Collaboration",
+      desc: getContent('mission', 'card_5_desc') || "Partnerships with tech companies, incubation centers, and government bodies.",
       color: "from-purple-500/20 to-blue-500/10"
     },
     {
       icon: Lightbulb,
-      title: "Innovation",
-      desc: "Fostering original patents, novel architectures, and experimental hardware.",
+      title: getContent('mission', 'card_6_title') || "Innovation",
+      desc: getContent('mission', 'card_6_desc') || "Fostering original patents, novel architectures, and experimental hardware.",
       color: "from-cyan-500/20 to-emerald-500/10"
     },
     {
       icon: Crown,
-      title: "Leadership",
-      desc: "Cultivating managerial resilience, team coordination, and strategic communication.",
+      title: getContent('mission', 'card_7_title') || "Leadership",
+      desc: getContent('mission', 'card_7_desc') || "Cultivating managerial resilience, team coordination, and strategic communication.",
       color: "from-amber-500/20 to-orange-500/10"
     },
     {
       icon: TrendingUp,
-      title: "Sustainable Ventures",
-      desc: "Transforming collegiate prototypes into revenue-generating, scalable businesses.",
+      title: getContent('mission', 'card_8_title') || "Sustainable Ventures",
+      desc: getContent('mission', 'card_8_desc') || "Transforming collegiate prototypes into revenue-generating, scalable businesses.",
       color: "from-emerald-500/20 to-teal-500/10"
     }
   ];
@@ -79,7 +89,7 @@ export const VisionMissionSection: React.FC = () => {
         <div className="mb-24 text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-nexora-500/10 border border-nexora-500/30 text-xs font-semibold text-nexora-300 uppercase tracking-widest mb-6">
             <Eye className="w-3.5 h-3.5 text-nexora-400" />
-            <span>Official Vision</span>
+            <span>{visionHeading}</span>
           </div>
 
           <div className="relative p-8 sm:p-12 rounded-3xl bg-surface-elevated/80 border border-nexora-500/30 shadow-2xl backdrop-blur-xl">
@@ -87,12 +97,7 @@ export const VisionMissionSection: React.FC = () => {
             <Sparkles className="w-8 h-8 text-nexora-400 mx-auto mb-4 opacity-75" />
 
             <blockquote className="text-xl sm:text-2xl md:text-3xl font-heading font-medium text-slate-100 leading-relaxed sm:leading-relaxed">
-              "To build a vibrant entrepreneurial ecosystem where{' '}
-              <span className="text-gradient-cyan font-bold">innovation</span> thrives, ideas transform into{' '}
-              <span className="text-gradient-blue font-bold">impactful ventures</span>, and every student is empowered to become a visionary{' '}
-              <span className="text-white font-bold underline decoration-nexora-400/50 underline-offset-8">leader</span>,{' '}
-              <span className="text-gradient-cyan font-bold">problem solver</span>, and{' '}
-              <span className="text-sky-300 font-bold">changemaker</span> for society."
+              "{visionContent.replace(/^"|"$/g, '')}"
             </blockquote>
 
             <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-center gap-2 text-xs font-mono text-slate-400">
@@ -109,13 +114,20 @@ export const VisionMissionSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-nexora-500/10 border border-nexora-500/30 text-xs font-semibold text-nexora-300 uppercase tracking-widest mb-4">
             <Target className="w-3.5 h-3.5 text-nexora-400" />
-            <span>Our Mission</span>
+            <span>{missionBadge}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black font-heading tracking-tight text-white mb-4">
-            Transforming Ideas into <span className="text-gradient-cyan">Sustainable Ventures</span>
+            {missionHeading.includes('Sustainable Ventures') ? (
+              <>
+                {missionHeading.split('Sustainable Ventures')[0]}
+                <span className="text-gradient-cyan">Sustainable Ventures</span>
+              </>
+            ) : (
+              <span className="text-gradient-cyan">{missionHeading}</span>
+            )}
           </h2>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-            "To nurture entrepreneurial talent by organizing workshops, hackathons, startup events, mentorship programs, and industry collaborations that empower students to innovate, lead, and transform ideas into sustainable ventures."
+            "{missionQuote.replace(/^"|"$/g, '')}"
           </p>
         </div>
 

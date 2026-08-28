@@ -18,7 +18,18 @@ export const AdminContentPage: React.FC = () => {
   const { content, isLoading, getContent, refetch } = useSiteContent();
 
   // HOME state
-  const [home, setHome] = useState({ hero_title: '', hero_description: '', cta_primary_text: '', cta_primary_link: '', cta_secondary_text: '', cta_secondary_link: '' });
+  const [home, setHome] = useState({ 
+    hero_title: '', 
+    hero_description: '', 
+    cta_primary_text: '', 
+    cta_primary_link: '', 
+    cta_secondary_text: '', 
+    cta_secondary_link: '',
+    stat_1_label: '', stat_1_sub: '',
+    stat_2_label: '', stat_2_sub: '',
+    stat_3_label: '', stat_3_sub: '',
+    stat_4_label: '', stat_4_sub: '',
+  });
   const [homeStatus, setHomeStatus] = useState<SectionState>({ status: 'idle', errorMsg: '' });
 
   // ABOUT state
@@ -30,7 +41,20 @@ export const AdminContentPage: React.FC = () => {
   const [visionStatus, setVisionStatus] = useState<SectionState>({ status: 'idle', errorMsg: '' });
 
   // MISSION state
-  const [mission, setMission] = useState({ heading: '', content: '' });
+  const [mission, setMission] = useState({ 
+    badge: '',
+    heading: '', 
+    content: '', 
+    quote: '',
+    card_1_title: '', card_1_desc: '',
+    card_2_title: '', card_2_desc: '',
+    card_3_title: '', card_3_desc: '',
+    card_4_title: '', card_4_desc: '',
+    card_5_title: '', card_5_desc: '',
+    card_6_title: '', card_6_desc: '',
+    card_7_title: '', card_7_desc: '',
+    card_8_title: '', card_8_desc: '',
+  });
   const [missionStatus, setMissionStatus] = useState<SectionState>({ status: 'idle', errorMsg: '' });
 
   // CONTACT state
@@ -47,6 +71,14 @@ export const AdminContentPage: React.FC = () => {
         cta_primary_link: getContent('home', 'cta_primary_link'),
         cta_secondary_text: getContent('home', 'cta_secondary_text'),
         cta_secondary_link: getContent('home', 'cta_secondary_link'),
+        stat_1_label: getContent('home', 'stat_1_label'),
+        stat_1_sub: getContent('home', 'stat_1_sub'),
+        stat_2_label: getContent('home', 'stat_2_label'),
+        stat_2_sub: getContent('home', 'stat_2_sub'),
+        stat_3_label: getContent('home', 'stat_3_label'),
+        stat_3_sub: getContent('home', 'stat_3_sub'),
+        stat_4_label: getContent('home', 'stat_4_label'),
+        stat_4_sub: getContent('home', 'stat_4_sub'),
       });
       setAbout({
         heading: getContent('about', 'heading'),
@@ -57,8 +89,18 @@ export const AdminContentPage: React.FC = () => {
         content: getContent('vision', 'content'),
       });
       setMission({
+        badge: getContent('mission', 'badge'),
         heading: getContent('mission', 'heading'),
         content: getContent('mission', 'content'),
+        quote: getContent('mission', 'quote'),
+        card_1_title: getContent('mission', 'card_1_title'), card_1_desc: getContent('mission', 'card_1_desc'),
+        card_2_title: getContent('mission', 'card_2_title'), card_2_desc: getContent('mission', 'card_2_desc'),
+        card_3_title: getContent('mission', 'card_3_title'), card_3_desc: getContent('mission', 'card_3_desc'),
+        card_4_title: getContent('mission', 'card_4_title'), card_4_desc: getContent('mission', 'card_4_desc'),
+        card_5_title: getContent('mission', 'card_5_title'), card_5_desc: getContent('mission', 'card_5_desc'),
+        card_6_title: getContent('mission', 'card_6_title'), card_6_desc: getContent('mission', 'card_6_desc'),
+        card_7_title: getContent('mission', 'card_7_title'), card_7_desc: getContent('mission', 'card_7_desc'),
+        card_8_title: getContent('mission', 'card_8_title'), card_8_desc: getContent('mission', 'card_8_desc'),
       });
       setContact({
         heading: getContent('contact', 'heading'),
@@ -79,6 +121,14 @@ export const AdminContentPage: React.FC = () => {
   ) => {
     setStatus({ status: 'saving', errorMsg: '' });
     const items = Object.entries(data).map(([key, value]) => ({ section, key, value }));
+    if (section === 'contact') {
+      if (data.email) {
+        items.push({ section: 'footer', key: 'email', value: data.email });
+      }
+      if (data.address) {
+        items.push({ section: 'footer', key: 'campus_address', value: data.address });
+      }
+    }
     const result = await updateSiteContentBatch(items);
     if (result.success) {
       setStatus({ status: 'success', errorMsg: '' });
@@ -134,7 +184,7 @@ export const AdminContentPage: React.FC = () => {
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-800">
             <div>
               <h2 className="text-base font-bold text-white font-heading">Home Page</h2>
-              <p className="text-xs text-slate-400">Hero section content and CTA buttons</p>
+              <p className="text-xs text-slate-400">Hero section content, buttons, and Quick Highlights metrics bar</p>
             </div>
             <StatusBadge sectionStatus={homeStatus} />
           </div>
@@ -174,6 +224,44 @@ export const AdminContentPage: React.FC = () => {
                   onChange={e => setHome({ ...home, cta_secondary_link: e.target.value })} placeholder="/team" />
               </div>
             </div>
+
+            {/* Quick Stats Bar Edits (Image 2) */}
+            <div className="pt-4 border-t border-slate-800/80 space-y-3">
+              <h3 className="text-xs font-bold font-mono text-nexora-400 uppercase tracking-wider">
+                Quick Highlights / Stats Bar (Image 2)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3 rounded-xl bg-surface/60 border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-300">Stat Card 1</span>
+                  <input type="text" className={inputClass} value={home.stat_1_label}
+                    onChange={e => setHome({ ...home, stat_1_label: e.target.value })} placeholder="500+ Students" />
+                  <input type="text" className={inputClass} value={home.stat_1_sub}
+                    onChange={e => setHome({ ...home, stat_1_sub: e.target.value })} placeholder="Engaged Community" />
+                </div>
+                <div className="p-3 rounded-xl bg-surface/60 border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-300">Stat Card 2</span>
+                  <input type="text" className={inputClass} value={home.stat_2_label}
+                    onChange={e => setHome({ ...home, stat_2_label: e.target.value })} placeholder="24+ Events" />
+                  <input type="text" className={inputClass} value={home.stat_2_sub}
+                    onChange={e => setHome({ ...home, stat_2_sub: e.target.value })} placeholder="Summits & Hackathons" />
+                </div>
+                <div className="p-3 rounded-xl bg-surface/60 border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-300">Stat Card 3</span>
+                  <input type="text" className={inputClass} value={home.stat_3_label}
+                    onChange={e => setHome({ ...home, stat_3_label: e.target.value })} placeholder="Active Cell" />
+                  <input type="text" className={inputClass} value={home.stat_3_sub}
+                    onChange={e => setHome({ ...home, stat_3_sub: e.target.value })} placeholder="Innovation Driven" />
+                </div>
+                <div className="p-3 rounded-xl bg-surface/60 border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-300">Stat Card 4</span>
+                  <input type="text" className={inputClass} value={home.stat_4_label}
+                    onChange={e => setHome({ ...home, stat_4_label: e.target.value })} placeholder="8+ Startups" />
+                  <input type="text" className={inputClass} value={home.stat_4_sub}
+                    onChange={e => setHome({ ...home, stat_4_sub: e.target.value })} placeholder="Incubated Ideas" />
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <div className="mt-5 flex justify-end">
@@ -258,27 +346,72 @@ export const AdminContentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ─── MISSION SECTION ─── */}
+        {/* ─── MISSION SECTION (Image 1) ─── */}
         <div className="p-6 rounded-2xl bg-surface-elevated/80 border border-slate-800">
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-800">
             <div>
-              <h2 className="text-base font-bold text-white font-heading">Mission</h2>
-              <p className="text-xs text-slate-400">Mission section heading and statement</p>
+              <h2 className="text-base font-bold text-white font-heading">Mission Section & Focus Cards (Image 1)</h2>
+              <p className="text-xs text-slate-400">Mission badge, title, quote, and 8 focus area cards</p>
             </div>
             <StatusBadge sectionStatus={missionStatus} />
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className={labelClass}>Heading</label>
-              <input type="text" className={inputClass} value={mission.heading}
-                onChange={e => setMission({ ...mission, heading: e.target.value })} placeholder="Our Mission" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Mission Badge Text</label>
+                <input type="text" className={inputClass} value={mission.badge}
+                  onChange={e => setMission({ ...mission, badge: e.target.value })} placeholder="OUR MISSION" />
+              </div>
+              <div>
+                <label className={labelClass}>Mission Main Title</label>
+                <input type="text" className={inputClass} value={mission.heading}
+                  onChange={e => setMission({ ...mission, heading: e.target.value })} placeholder="Transforming Ideas into Sustainable Ventures" />
+              </div>
             </div>
             <div>
-              <label className={labelClass}>Mission Statement</label>
-              <textarea className={textareaClass} rows={5} value={mission.content}
-                onChange={e => setMission({ ...mission, content: e.target.value })} />
+              <label className={labelClass}>Mission Quote / Subheading</label>
+              <textarea className={textareaClass} rows={3} value={mission.quote || mission.content}
+                onChange={e => setMission({ ...mission, quote: e.target.value, content: e.target.value })} placeholder="To nurture entrepreneurial talent..." />
             </div>
+
+            {/* 8 Mission Focus Cards */}
+            <div className="pt-4 border-t border-slate-800/80 space-y-3">
+              <h3 className="text-xs font-bold font-mono text-nexora-400 uppercase tracking-wider">
+                8 Mission Focus Cards (Image 1)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { num: 1, keyT: 'card_1_title', keyD: 'card_1_desc', defT: 'Workshops', defD: 'Deep-dive sessions on system design...' },
+                  { num: 2, keyT: 'card_2_title', keyD: 'card_2_desc', defT: 'Hackathons', defD: '36-hour sprint challenges solving...' },
+                  { num: 3, keyT: 'card_3_title', keyD: 'card_3_desc', defT: 'Startup Events', defD: 'Annual E-Summits, pitch competitions...' },
+                  { num: 4, keyT: 'card_4_title', keyD: 'card_4_desc', defT: 'Mentorship', defD: 'Structured guidance from alumni founders...' },
+                  { num: 5, keyT: 'card_5_title', keyD: 'card_5_desc', defT: 'Industry Collaboration', defD: 'Partnerships with tech companies...' },
+                  { num: 6, keyT: 'card_6_title', keyD: 'card_6_desc', defT: 'Innovation', defD: 'Fostering original patents, novel architectures...' },
+                  { num: 7, keyT: 'card_7_title', keyD: 'card_7_desc', defT: 'Leadership', defD: 'Cultivating managerial resilience...' },
+                  { num: 8, keyT: 'card_8_title', keyD: 'card_8_desc', defT: 'Sustainable Ventures', defD: 'Transforming collegiate prototypes...' },
+                ].map(card => (
+                  <div key={card.num} className="p-3 rounded-xl bg-surface/60 border border-slate-800 space-y-2">
+                    <span className="text-[11px] font-bold text-slate-300">Card {card.num}</span>
+                    <input
+                      type="text"
+                      className={inputClass}
+                      value={(mission as any)[card.keyT] || ''}
+                      onChange={e => setMission({ ...mission, [card.keyT]: e.target.value })}
+                      placeholder={card.defT}
+                    />
+                    <textarea
+                      className={textareaClass}
+                      rows={2}
+                      value={(mission as any)[card.keyD] || ''}
+                      onChange={e => setMission({ ...mission, [card.keyD]: e.target.value })}
+                      placeholder={card.defD}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
 
           <div className="mt-5 flex justify-end">

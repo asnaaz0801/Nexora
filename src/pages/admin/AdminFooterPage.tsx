@@ -13,6 +13,10 @@ export const AdminFooterPage: React.FC = () => {
 
   const [formData, setFormData] = useState({
     description: '',
+    badge_text: '',
+    slogan: '',
+    campus_address: '',
+    college_initiative_text: '',
     instagram_url: '',
     linkedin_url: '',
     github_url: '',
@@ -31,6 +35,10 @@ export const AdminFooterPage: React.FC = () => {
     if (!isLoading) {
       setFormData({
         description: getContent('footer', 'description'),
+        badge_text: getContent('footer', 'badge_text') || 'An official initiative of ACET Nagpur',
+        slogan: getContent('footer', 'slogan') || 'DREAM. BUILD. LEAD.',
+        campus_address: getContent('footer', 'campus_address') || 'Nexora E-Cell, Innovation Block, Anjuman College of Engineering & Technology, Mangalwari Bazaar Road, Sadar, Nagpur, Maharashtra 440001',
+        college_initiative_text: getContent('footer', 'college_initiative_text') || 'An initiative of Anjuman College of Engineering and Technology',
         instagram_url: getContent('footer', 'instagram_url'),
         linkedin_url: getContent('footer', 'linkedin_url'),
         github_url: getContent('footer', 'github_url'),
@@ -54,6 +62,12 @@ export const AdminFooterPage: React.FC = () => {
       key,
       value,
     }));
+    if (formData.email) {
+      items.push({ section: 'contact', key: 'email', value: formData.email });
+    }
+    if (formData.campus_address) {
+      items.push({ section: 'contact', key: 'address', value: formData.campus_address });
+    }
 
     const result = await updateSiteContentBatch(items);
 
@@ -134,6 +148,60 @@ export const AdminFooterPage: React.FC = () => {
             <p className="text-[11px] text-slate-400 mt-2">
               This replaces the college website link at the bottom right of the website footer.
             </p>
+          </div>
+
+          {/* Brand Badges & Slogan (Image 3) */}
+          <div>
+            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 pb-2 border-b border-slate-800">
+              <Globe className="w-4 h-4 text-nexora-400" />
+              Footer Badges & Campus Location (Image 3)
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Official Initiative Badge Text</label>
+                  <input
+                    type="text"
+                    className={inputClass}
+                    value={formData.badge_text}
+                    onChange={e => setFormData({ ...formData, badge_text: e.target.value })}
+                    placeholder="An official initiative of ACET Nagpur"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Slogan Badge Text</label>
+                  <input
+                    type="text"
+                    className={inputClass}
+                    value={formData.slogan}
+                    onChange={e => setFormData({ ...formData, slogan: e.target.value })}
+                    placeholder="DREAM. BUILD. LEAD."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Campus Location Address</label>
+                <textarea
+                  className={inputClass + ' resize-none'}
+                  rows={3}
+                  value={formData.campus_address}
+                  onChange={e => setFormData({ ...formData, campus_address: e.target.value })}
+                  placeholder="Nexora E-Cell, Innovation Block, Anjuman College of Engineering & Technology..."
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Bottom Initiative Text</label>
+                <input
+                  type="text"
+                  className={inputClass}
+                  value={formData.college_initiative_text}
+                  onChange={e => setFormData({ ...formData, college_initiative_text: e.target.value })}
+                  placeholder="An initiative of Anjuman College of Engineering and Technology"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Footer Description */}

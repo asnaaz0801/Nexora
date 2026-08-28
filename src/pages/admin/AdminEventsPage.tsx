@@ -18,7 +18,7 @@ const emptyForm = {
   category: 'Workshop' as EventCategory,
   status: 'upcoming' as EventStatus,
   bannerImage: '',
-  date: '',
+  date: new Date().toISOString().split('T')[0],
   displayDate: '',
   time: '',
   venue: '',
@@ -27,7 +27,7 @@ const emptyForm = {
   registrationLink: '',
   maxParticipants: 200,
   isFeatured: false,
-  isPublished: false,
+  isPublished: true,
 };
 
 export const AdminEventsPage: React.FC = () => {
@@ -69,7 +69,10 @@ export const AdminEventsPage: React.FC = () => {
 
   const handleOpenAdd = () => {
     setEditingEventId(null);
-    setFormData({ ...emptyForm });
+    setFormData({
+      ...emptyForm,
+      date: new Date().toISOString().split('T')[0],
+    });
     setSaveStatus('idle');
     setModalOpen(true);
   };
@@ -84,7 +87,7 @@ export const AdminEventsPage: React.FC = () => {
       category: evt.category,
       status: evt.status,
       bannerImage: evt.bannerImage || '',
-      date: evt.date,
+      date: evt.date || new Date().toISOString().split('T')[0],
       displayDate: evt.displayDate || '',
       time: evt.time,
       venue: evt.venue,
@@ -93,7 +96,7 @@ export const AdminEventsPage: React.FC = () => {
       registrationLink: evt.registrationLink || '',
       maxParticipants: evt.maxParticipants || 200,
       isFeatured: evt.isFeatured || false,
-      isPublished: evt.isPublished || false,
+      isPublished: evt.isPublished ?? true,
     });
     setSaveStatus('idle');
     setModalOpen(true);
@@ -103,15 +106,25 @@ export const AdminEventsPage: React.FC = () => {
     e.preventDefault();
     setSaveStatus('saving');
 
+    const validDate = formData.date && formData.date.trim() !== '' ? formData.date : new Date().toISOString().split('T')[0];
     const slug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const displayDate = formData.displayDate || formData.date;
-    const registrationDeadline = formData.registrationDeadline || formData.date;
+    const displayDate = formData.displayDate || validDate;
+    const registrationDeadline = formData.registrationDeadline && formData.registrationDeadline.trim() !== '' ? formData.registrationDeadline : validDate;
+
+    const payload = {
+      ...formData,
+      date: validDate,
+      slug,
+      displayDate,
+      registrationDeadline,
+      registeredCount: 0
+    };
 
     try {
       if (editingEventId) {
-        await updateEvent(editingEventId, { ...formData, slug, displayDate, registrationDeadline, registeredCount: 0 });
+        await updateEvent(editingEventId, payload);
       } else {
-        await addEvent({ ...formData, slug, displayDate, registrationDeadline, registeredCount: 0 });
+        await addEvent(payload);
       }
       setSaveStatus('success');
       setTimeout(() => {

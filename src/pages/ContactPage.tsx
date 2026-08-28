@@ -21,7 +21,7 @@ export const ContactPage: React.FC = () => {
 
   const heading     = getContent('contact', 'heading')     || 'Get In Touch';
   const description = getContent('contact', 'description') || 'Have a question, partnership proposal, or want to collaborate with Nexora E-Cell? We\'d love to hear from you.';
-  const email       = getContent('footer', 'email')        || getContent('contact', 'email') || 'ecell@acet.ac.in';
+  const email       = getContent('contact', 'email')        || getContent('footer', 'email') || 'ecell@acet.ac.in';
   const phone       = getContent('contact', 'phone')       || '';
   const address     = getContent('contact', 'address')     || 'Nexora E-Cell, Innovation Block, Anjuman College of Engineering & Technology, Mangalwari Bazaar Road, Sadar, Nagpur, Maharashtra 440001';
   const mapUrl      = getContent('contact', 'map_url')     || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.8988654571765!2d79.08339257600738!3d21.156402483363384!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4c0e6659f80a7%3A0xb35a39cb20f9fa4c!2sAnjuman%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';

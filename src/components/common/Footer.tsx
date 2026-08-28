@@ -15,14 +15,18 @@ import { useSiteContent } from '../../hooks/useSiteContent';
 export const Footer: React.FC = () => {
   const { getContent } = useSiteContent();
 
-  const instagramUrl = getContent('footer', 'instagram_url') || 'https://instagram.com';
-  const linkedinUrl  = getContent('footer', 'linkedin_url')  || 'https://linkedin.com';
-  const githubUrl    = getContent('footer', 'github_url')    || 'https://github.com';
-  const email        = getContent('footer', 'email')         || 'ecell@acet.ac.in';
-  const description  = getContent('footer', 'description')   || 'Where Ideas Become Impact. Building the next generation of innovators, entrepreneurs, leaders, and changemakers at Anjuman College of Engineering and Technology.';
-  const copyright    = getContent('footer', 'copyright_text') || '© 2026 Nexora E-Cell. All Rights Reserved.';
-  const collegeUrl   = getContent('footer', 'college_url')   || 'https://anjumanengg.edu.in/';
-  const collegeText  = getContent('footer', 'college_text')  || 'anjumanengg.edu.in';
+  const instagramUrl   = getContent('footer', 'instagram_url')   || 'https://instagram.com';
+  const linkedinUrl    = getContent('footer', 'linkedin_url')    || 'https://linkedin.com';
+  const githubUrl      = getContent('footer', 'github_url')      || 'https://github.com';
+  const email          = getContent('contact', 'email')          || getContent('footer', 'email') || 'ecell@acet.ac.in';
+  const description    = getContent('footer', 'description')     || 'Where Ideas Become Impact. Building the next generation of innovators, entrepreneurs, leaders, and changemakers at Anjuman College of Engineering and Technology.';
+  const copyright      = getContent('footer', 'copyright_text') || '© 2026 Nexora E-Cell. All Rights Reserved.';
+  const collegeUrl     = getContent('footer', 'college_url')     || 'https://anjumanengg.edu.in/';
+  const collegeText    = getContent('footer', 'college_text')    || 'anjumanengg.edu.in';
+  const badgeText      = getContent('footer', 'badge_text')      || 'An official initiative of ACET Nagpur';
+  const slogan         = getContent('footer', 'slogan')          || 'DREAM. BUILD. LEAD.';
+  const campusAddress  = getContent('contact', 'address')        || getContent('footer', 'campus_address') || 'Nexora E-Cell, Innovation Block, Anjuman College of Engineering & Technology, Mangalwari Bazaar Road, Sadar, Nagpur, Maharashtra 440001';
+  const initiativeText = getContent('footer', 'college_initiative_text') || 'An initiative of Anjuman College of Engineering and Technology';
 
   const ecosystemLinks = [
     { name: 'Home', path: '/' },
@@ -71,13 +75,13 @@ export const Footer: React.FC = () => {
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-slate-800 text-xs text-slate-300">
               <ShieldCheck className="w-4 h-4 text-nexora-400 shrink-0" />
-              <span>An official initiative of <strong className="text-white">ACET Nagpur</strong></span>
+              <span>{badgeText}</span>
             </div>
 
             {/* Slogan */}
             <div className="pt-2">
               <span className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase bg-slate-900 px-3 py-1 rounded border border-slate-800">
-                DREAM. BUILD. LEAD.
+                {slogan}
               </span>
             </div>
           </div>
@@ -110,10 +114,8 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 text-sm text-slate-400">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-nexora-400 shrink-0 mt-0.5" />
-                <p className="text-xs leading-relaxed text-slate-300">
-                  Nexora E-Cell, Innovation Block,<br />
-                  Anjuman College of Engineering & Technology,<br />
-                  Mangalwari Bazaar Road, Sadar, Nagpur, Maharashtra 440001
+                <p className="text-xs leading-relaxed text-slate-300 whitespace-pre-line">
+                  {campusAddress}
                 </p>
               </div>
 
@@ -176,7 +178,7 @@ export const Footer: React.FC = () => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>{copyright}</p>
           <div className="flex items-center gap-6">
-            <span className="text-slate-400">An initiative of <strong className="text-slate-300">Anjuman College of Engineering and Technology</strong></span>
+            <span className="text-slate-400">{initiativeText}</span>
             <a 
               href={collegeUrl} 
               target="_blank" 

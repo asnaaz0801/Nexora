@@ -134,10 +134,10 @@ export const HeroSection: React.FC = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto pt-6 border-t border-slate-800/80"
         >
           {[
-            { icon: Users, label: "500+ Students", sub: "Engaged Community" },
-            { icon: Rocket, label: "24+ Events", sub: "Summits & Hackathons" },
-            { icon: Zap, label: "Active Cell", sub: "Innovation Driven" },
-            { icon: Trophy, label: "8+ Startups", sub: "Incubated Ideas" },
+            { icon: Users, label: getContent('home', 'stat_1_label') || "500+ Students", sub: getContent('home', 'stat_1_sub') || "Engaged Community" },
+            { icon: Rocket, label: getContent('home', 'stat_2_label') || "24+ Events", sub: getContent('home', 'stat_2_sub') || "Summits & Hackathons" },
+            { icon: Zap, label: getContent('home', 'stat_3_label') || "Active Cell", sub: getContent('home', 'stat_3_sub') || "Innovation Driven" },
+            { icon: Trophy, label: getContent('home', 'stat_4_label') || "8+ Startups", sub: getContent('home', 'stat_4_sub') || "Incubated Ideas" },
           ].map((item, idx) => (
             <div key={idx} className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface/40 border border-slate-800/60 text-left">
               <div className="w-9 h-9 rounded-lg bg-nexora-500/10 border border-nexora-500/20 flex items-center justify-center text-nexora-400 shrink-0">

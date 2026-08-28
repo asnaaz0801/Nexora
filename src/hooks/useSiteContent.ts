@@ -12,6 +12,16 @@ const defaultContent: Record<string, string> = {
   'home_cta_secondary_text': 'Meet Our Team',
   'home_cta_secondary_link': '/team',
 
+  // HOME STATS TICKER
+  'home_stat_1_label': '500+ Students',
+  'home_stat_1_sub': 'Engaged Community',
+  'home_stat_2_label': '24+ Events',
+  'home_stat_2_sub': 'Summits & Hackathons',
+  'home_stat_3_label': 'Active Cell',
+  'home_stat_3_sub': 'Innovation Driven',
+  'home_stat_4_label': '8+ Startups',
+  'home_stat_4_sub': 'Incubated Ideas',
+
   // ABOUT
   'about_heading': 'Fostering Innovation & Leadership at ACET',
   'about_description': 'Nexora is the official Entrepreneurship Cell of Anjuman College of Engineering and Technology, created to nurture innovation, problem-solving, and venture building among ambitious students.',
@@ -21,8 +31,28 @@ const defaultContent: Record<string, string> = {
   'vision_content': 'To build a vibrant entrepreneurial ecosystem where innovation thrives, ideas transform into impactful ventures, and every student is empowered to become a visionary leader, problem solver, and changemaker for society.',
 
   // MISSION
-  'mission_heading': 'Our Mission',
+  'mission_badge': 'Our Mission',
+  'mission_heading': 'Transforming Ideas into Sustainable Ventures',
+  'mission_quote': 'To nurture entrepreneurial talent by organizing workshops, hackathons, startup events, mentorship programs, and industry collaborations that empower students to innovate, lead, and transform ideas into sustainable ventures.',
   'mission_content': 'To nurture entrepreneurial talent by organizing workshops, hackathons, startup events, mentorship programs, and industry collaborations that empower students to innovate, lead, and transform ideas into sustainable ventures.',
+
+  // MISSION CARDS
+  'mission_card_1_title': 'Workshops',
+  'mission_card_1_desc': 'Deep-dive sessions on system design, venture economics, and rapid prototyping.',
+  'mission_card_2_title': 'Hackathons',
+  'mission_card_2_desc': '36-hour sprint challenges solving smart infrastructure, AI, and civic tech problems.',
+  'mission_card_3_title': 'Startup Events',
+  'mission_card_3_desc': 'Annual E-Summits, pitch competitions, and regional venture expos.',
+  'mission_card_4_title': 'Mentorship',
+  'mission_card_4_desc': 'Structured guidance from alumni founders, architects, and angel investors.',
+  'mission_card_5_title': 'Industry Collaboration',
+  'mission_card_5_desc': 'Partnerships with tech companies, incubation centers, and government bodies.',
+  'mission_card_6_title': 'Innovation',
+  'mission_card_6_desc': 'Fostering original patents, novel architectures, and experimental hardware.',
+  'mission_card_7_title': 'Leadership',
+  'mission_card_7_desc': 'Cultivating managerial resilience, team coordination, and strategic communication.',
+  'mission_card_8_title': 'Sustainable Ventures',
+  'mission_card_8_desc': 'Transforming collegiate prototypes into revenue-generating, scalable businesses.',
 
   // CONTACT
   'contact_heading': 'Get In Touch',
@@ -34,6 +64,10 @@ const defaultContent: Record<string, string> = {
 
   // FOOTER & COLLEGE LINKS
   'footer_description': 'Where Ideas Become Impact. Building the next generation of innovators, entrepreneurs, leaders, and changemakers at Anjuman College of Engineering and Technology.',
+  'footer_badge_text': 'An official initiative of ACET Nagpur',
+  'footer_slogan': 'DREAM. BUILD. LEAD.',
+  'footer_campus_address': 'Nexora E-Cell, Innovation Block, Anjuman College of Engineering & Technology, Mangalwari Bazaar Road, Sadar, Nagpur, Maharashtra 440001',
+  'footer_college_initiative_text': 'An initiative of Anjuman College of Engineering and Technology',
   'footer_instagram_url': 'https://instagram.com',
   'footer_linkedin_url': 'https://linkedin.com',
   'footer_github_url': 'https://github.com',

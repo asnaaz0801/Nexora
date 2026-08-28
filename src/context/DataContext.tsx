@@ -6,6 +6,7 @@ import {
   EventRegistration 
 } from '../types';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { initialEvents } from '../lib/mockData';
 
 const EVENTS_KEY = 'nexora_events_cache';
 const TEAM_KEY = 'nexora_team_cache';
@@ -50,7 +51,11 @@ const defaultTeamMembers: TeamMember[] = [
 function getStored<T>(key: string, fallback: T): T {
   try {
     const saved = localStorage.getItem(key);
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed as T;
+      if (!Array.isArray(parsed) && parsed) return parsed as T;
+    }
   } catch (e) {
     console.error('LocalStorage load error:', e);
   }
@@ -63,6 +68,20 @@ function setStored<T>(key: string, data: T) {
   } catch (e) {
     console.error('LocalStorage save error:', e);
   }
+}
+
+/**
+ * Ensures date is in valid YYYY-MM-DD format for PostgreSQL DATE columns.
+ */
+function formatDateForPostgres(d?: string): string {
+  if (!d || !d.trim()) return new Date().toISOString().split('T')[0];
+  const trimmed = d.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const dateObj = new Date(trimmed);
+  if (isNaN(dateObj.getTime())) {
+    return new Date().toISOString().split('T')[0];
+  }
+  return dateObj.toISOString().split('T')[0];
 }
 
 interface DataContextType {
@@ -94,7 +113,7 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [events, setEvents] = useState<Event[]>(() => getStored(EVENTS_KEY, []));
+  const [events, setEvents] = useState<Event[]>(() => getStored(EVENTS_KEY, initialEvents));
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(() => getStored(TEAM_KEY, defaultTeamMembers));
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [registrations, setRegistrations] = useState<EventRegistration[]>([]);
@@ -124,32 +143,30 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setStored(EVENTS_KEY, mapped);
         } else if (eventsRes.data && eventsRes.data.length === 0) {
           // Auto-seed initial events to Supabase so Cloud DB is ready for cross-browser sync
-          const localEvents = getStored<Event[]>(EVENTS_KEY, []);
-          if (localEvents.length > 0) {
-            const rows = localEvents.map(e => ({
-              id: e.id,
-              title: e.title,
-              slug: e.slug || e.id,
-              tagline: e.tagline || '',
-              description: e.description,
-              full_content: e.fullContent || '',
-              category: e.category,
-              status: e.status,
-              banner_image: e.bannerImage || '',
-              date: e.date,
-              display_date: e.displayDate || e.date,
-              time: e.time || '',
-              venue: e.venue || '',
-              registration_deadline: e.registrationDeadline || e.date,
-              registration_open: e.registrationOpen ?? true,
-              registration_link: e.registrationLink || '',
-              max_participants: e.maxParticipants || 200,
-              registered_count: e.registeredCount || 0,
-              is_featured: e.isFeatured || false,
-              is_published: e.isPublished ?? false,
-            }));
-            supabase.from('events').upsert(rows, { onConflict: 'id' }).then(() => {});
-          }
+          const localEvents = getStored<Event[]>(EVENTS_KEY, initialEvents);
+          const rows = localEvents.map(e => ({
+            id: e.id,
+            title: e.title,
+            slug: e.slug || e.id,
+            tagline: e.tagline || '',
+            description: e.description,
+            full_content: e.fullContent || '',
+            category: e.category,
+            status: e.status,
+            banner_image: e.bannerImage || '',
+            date: formatDateForPostgres(e.date),
+            display_date: e.displayDate || e.date,
+            time: e.time || '',
+            venue: e.venue || '',
+            registration_deadline: formatDateForPostgres(e.registrationDeadline || e.date),
+            registration_open: e.registrationOpen ?? true,
+            registration_link: e.registrationLink || '',
+            max_participants: e.maxParticipants || 200,
+            registered_count: e.registeredCount || 0,
+            is_featured: e.isFeatured || false,
+            is_published: e.isPublished ?? true,
+          }));
+          await supabase.from('events').upsert(rows, { onConflict: 'id' });
         }
 
         if (teamRes.data && teamRes.data.length > 0) {
@@ -176,7 +193,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               display_order: m.display_order || m.order || 1,
               is_active: m.isActive ?? true,
             }));
-            supabase.from('team_members').upsert(rows, { onConflict: 'id' }).then(() => {});
+            await supabase.from('team_members').upsert(rows, { onConflict: 'id' });
           }
         }
 
@@ -191,6 +208,51 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     fetchData();
+  }, []);
+
+  // Supabase Realtime live cross-account / cross-tab synchronization
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) return;
+
+    const channel = supabase
+      .channel('public-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'events' },
+        async () => {
+          try {
+            const { data } = await supabase.from('events').select('*').order('date', { ascending: true });
+            if (data && data.length > 0) {
+              const mapped = mapEvents(data);
+              setEvents(mapped);
+              setStored(EVENTS_KEY, mapped);
+            }
+          } catch (err) {
+            console.error('Realtime events sync error:', err);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'team_members' },
+        async () => {
+          try {
+            const { data } = await supabase.from('team_members').select('*').order('display_order', { ascending: true });
+            if (data && data.length > 0) {
+              const mapped = mapTeamMembers(data);
+              setTeamMembers(mapped);
+              setStored(TEAM_KEY, mapped);
+            }
+          } catch (err) {
+            console.error('Realtime team sync error:', err);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   function mapEvents(data: any[]): Event[] {
@@ -214,7 +276,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       maxParticipants: e.max_participants || e.maxParticipants || 200,
       registeredCount: e.registered_count || e.registeredCount || 0,
       isFeatured: e.is_featured || e.isFeatured || false,
-      isPublished: e.is_published ?? e.isPublished ?? false,
+      isPublished: e.is_published ?? e.isPublished ?? true,
     }));
   }
 
@@ -254,7 +316,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Events CRUD
   const addEvent = async (eventData: Omit<Event, 'id'>) => {
     const newId = 'evt-' + Date.now();
-    const newEvent: Event = { ...eventData, id: newId };
+    const formattedDate = formatDateForPostgres(eventData.date);
+    const formattedDeadline = formatDateForPostgres(eventData.registrationDeadline || eventData.date);
+
+    const newEvent: Event = { 
+      ...eventData, 
+      id: newId,
+      date: formattedDate,
+      registrationDeadline: formattedDeadline,
+      isPublished: eventData.isPublished ?? true
+    };
+
     setEvents(prev => {
       const updated = [newEvent, ...prev];
       setStored(EVENTS_KEY, updated);
@@ -263,28 +335,32 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('events').upsert({
+        const { error } = await supabase.from('events').upsert({
           id: newId,
           title: eventData.title,
           slug: eventData.slug || newId,
-          tagline: eventData.tagline,
+          tagline: eventData.tagline || '',
           description: eventData.description,
-          full_content: eventData.fullContent,
+          full_content: eventData.fullContent || '',
           category: eventData.category,
           status: eventData.status,
-          banner_image: eventData.bannerImage,
-          date: eventData.date,
-          display_date: eventData.displayDate,
-          time: eventData.time,
-          venue: eventData.venue,
-          registration_deadline: eventData.registrationDeadline || eventData.date,
-          registration_open: eventData.registrationOpen,
-          registration_link: eventData.registrationLink,
-          max_participants: eventData.maxParticipants,
+          banner_image: eventData.bannerImage || '',
+          date: formattedDate,
+          display_date: eventData.displayDate || formattedDate,
+          time: eventData.time || '',
+          venue: eventData.venue || '',
+          registration_deadline: formattedDeadline,
+          registration_open: eventData.registrationOpen ?? true,
+          registration_link: eventData.registrationLink || '',
+          max_participants: eventData.maxParticipants || 200,
           registered_count: 0,
-          is_featured: eventData.isFeatured,
-          is_published: eventData.isPublished ?? false,
+          is_featured: eventData.isFeatured || false,
+          is_published: eventData.isPublished ?? true,
         }, { onConflict: 'id' });
+
+        if (error) {
+          console.error('Supabase insert event error:', error.message);
+        }
       } catch (err) {
         console.error('Supabase insert event notice:', err);
       }
@@ -307,7 +383,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isSupabaseConfigured && supabase && fullItem) {
       try {
-        await supabase.from('events').upsert({
+        const formattedDate = formatDateForPostgres(fullItem.date);
+        const formattedDeadline = formatDateForPostgres(fullItem.registrationDeadline || fullItem.date);
+
+        const { error } = await supabase.from('events').upsert({
           id: id,
           title: fullItem.title,
           slug: fullItem.slug || id,
@@ -317,19 +396,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           category: fullItem.category,
           status: fullItem.status,
           banner_image: fullItem.bannerImage || '',
-          date: fullItem.date,
-          display_date: fullItem.displayDate || fullItem.date,
+          date: formattedDate,
+          display_date: fullItem.displayDate || formattedDate,
           time: fullItem.time || '',
           venue: fullItem.venue || '',
-          registration_deadline: fullItem.registrationDeadline || fullItem.date,
+          registration_deadline: formattedDeadline,
           registration_open: fullItem.registrationOpen ?? true,
           registration_link: fullItem.registrationLink || '',
           max_participants: fullItem.maxParticipants || 200,
           registered_count: fullItem.registeredCount || 0,
           is_featured: fullItem.isFeatured || false,
-          is_published: fullItem.isPublished ?? false,
+          is_published: fullItem.isPublished ?? true,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'id' });
+
+        if (error) {
+          console.error('Supabase update event error:', error.message);
+        }
       } catch (err) {
         console.error('Supabase update event notice:', err);
       }
